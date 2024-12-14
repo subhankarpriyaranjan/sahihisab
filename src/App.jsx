@@ -17,7 +17,7 @@ function App() {
       {/* <LogIn /> */}
       <Routes>
         <Route path="/about-us" element={<AboutUs/>} /> {/* Create a route for About Us */}
-        <Route path="/home" element={<NavBar />} /> {/* Create a route for Home */}
+        <Route path="/home" element={<AboutUs />} /> {/* Create a route for Home */}
         <Route path="/log-in" element={<LoginPage/>} /> {/*  Create a route for LogIn */}
         <Route path="/sign-up" element={<SignupPage/>} /> {/* Create a route for SignUp */}
         <Route path="/contactus" element={<ContactUs />} /> {/* Create a route for ContactUs */}
