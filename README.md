@@ -51,7 +51,7 @@ This project, "SahiHisab," is a personal project bySubhankar. It is provided sol
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 
 Developed by Subhankar and Bichitra 
-Feel free to contact me at [priyaranjansubhankar@gmail.com , dashbichitrananda01@gmail.com] for any queries or suggestions.
+Feel free to contact me at [priyaranjansubhankar@gmail.com] for any queries or suggestions.
 
   #Thank you Visit again 🙏🙏
 
