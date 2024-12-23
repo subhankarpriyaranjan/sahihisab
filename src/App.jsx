@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import '@fortawesome/fontawesome-free/css/all.min.css';
 import './App.css'
 import NavBar from './Components/NavBar'
 import AboutUs from './Components/Pages/AboutUs'
@@ -21,6 +20,12 @@ function App() {
         <Route path="/log-in" element={<LoginPage/>} /> {/*  Create a route for LogIn */}
         <Route path="/sign-up" element={<SignupPage/>} /> {/* Create a route for SignUp */}
         <Route path="/contactus" element={<ContactUs />} /> {/* Create a route for ContactUs */}
+
+          {/* <Route path="/Dashboard" element={<Dashboard />} /> */}
+          {/* <Route path="/members" element={<Members />} /> */}
+          {/* <Route path="/expenses" element={<Expenses />} /> */}
+          {/* <Route path="/group-expenses" element={<GroupExpenses />} /> */}
+          {/* <Route path="/reports" element={<Reports />} /> */}
       </Routes>
     </Router>
   )
