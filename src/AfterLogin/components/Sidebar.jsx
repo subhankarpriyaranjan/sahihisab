@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SidebarMenu } from './sidebar/SidebarMenu';
-import { CloseButton } from './common/CloseButton';
+import { CloseButton } from '../common/CloseButton';
 
 function Sidebar({ onClose }) {
   const location = useLocation();

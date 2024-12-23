@@ -1,6 +1,7 @@
-import React from 'react';
-import ExpenseChart from '../components/reports/ExpenseChart';
-import MembershipStats from '../components/reports/MembershipStats';
+import React from "react";
+
+import ExpenseChart from "../components/reports/ExpenseChart";
+import MembershipStats from "../components/reports/MembershipStats";
 
 function Reports() {
   return (
