@@ -1,105 +1,127 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
-function NavBar() {
+const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-    <div>
-      {/* <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1> */}
-      <nav className="bg-white dark:bg-gray-900 fixed w-full z-50 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
-        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <a href="#" className="flex items-center space-x-3 rtl:space-x-reverse">
-            <img src="#" className="h-8" alt="" />
-            <span className="self-center text-2xl font-bold whitespace-nowrap text-black dark:text-white">Sahi Hisab</span>
-          </a>
-          <div className="flex md:order-2 space-x-4 md:space-x-4 rtl:space-x-reverse border rounded-full px-4 py-2">
-            <Link to="/log-in"
-              href="#"
-            >
-              <button
-                type="button"
-                className="text-blue-800 dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Log In
-              </button>
+    <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="text-2xl font-bold text-indigo-600">
+              SahiHisab
             </Link>
-            <Link to="/sign-up"
-              href="#"
-              type="button"
-              className="text-blue-800 dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          </div>
+
+          <div className="hidden md:flex items-center space-x-8">
+            <a
+              href="/"
+              className="text-gray-700 hover:text-indigo-600 transition-colors"
+            >
+              Home
+            </a>
+            <a
+              href="#features"
+              className="text-gray-700 hover:text-indigo-600 transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="#contact"
+              className="text-gray-700 hover:text-indigo-600 transition-colors"
+            >
+              Contact Us
+            </a>
+            <Link
+              to="/register"
+              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
             >
               Register
             </Link>
-            <button
-              data-collapse-toggle="navbar-sticky"
-              type="button"
-              className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-              aria-controls="navbar-sticky"
-              aria-expanded="false"
+            <Link
+              to="/login"
+              className="border border-indigo-600 text-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-600 hover:text-white transition-colors"
             >
-              <span className="sr-only">Open main menu</span>
+              Login
+            </Link>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-700 hover:text-indigo-600 focus:outline-none"
+            >
               <svg
-                className="w-5 h-5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
                 fill="none"
-                viewBox="0 0 17 14"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 1h15M1 7h15M1 13h15"
-                />
+                {isMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
               </svg>
             </button>
           </div>
-          <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
-            <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-              <li>
-                <Link
-                  to="/home"
-                  href="#"
-                  className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500"
-                  aria-current="page"
-                >
-                  Home
-                </Link>
-              </li>
-              {/* <li>
-                <Link
-                  to="/about-us"
-                  href="#"
-                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  About
-                </Link>
-              </li> */}
-              <li>
-                <a
-                  href="#"
-                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Feature
-                </a>
-              </li>
-              <li>
-                <Link
-                  to="/contactus"
-                  
-                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
-          </div>
         </div>
-      </nav>
-    </div>
-  );
-}
+      </div>
 
-export default NavBar;
+      {/* Mobile menu */}
+      <div className={`md:hidden ${isMenuOpen ? "block" : "hidden"}`}>
+        <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
+          <a
+            href="#home"
+            className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-md"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Home
+          </a>
+          <a
+            href="#features"
+            className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-md"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Features
+          </a>
+          <a
+            href="#contact"
+            className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-md"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Contact Us
+          </a>
+          <Link
+            to="/register"
+            className="block px-3 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Register
+          </Link>
+          <Link
+            to="/login"
+            className="block px-3 py-2 text-indigo-600 border border-indigo-600 hover:bg-indigo-600 hover:text-white rounded-md"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Login
+          </Link>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;

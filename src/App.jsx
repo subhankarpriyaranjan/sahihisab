@@ -1,29 +1,97 @@
-import { useState } from 'react'
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import './App.css'
-import NavBar from './Components/NavBar'
-import AboutUs from './Components/Pages/AboutUs'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import ContactUs from './Components/Pages/ContactUs'
-import LoginPage from './Components/Pages/LoginPage';
-import SignupPage from './Components/Pages/SignupPage';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import Register from "./components/auth/Register";
+import Login from "./components/auth/Login";
 
-function App() {
-  
+import Layout from "./AfterLogin/components/Layout";
+import Dashboard from "./AfterLogin/pages/Dashboard";
+import Members from "./AfterLogin/pages/Members";
+import Expenses from "./AfterLogin/pages/Expenses";
+import GroupExpenses from "./AfterLogin/pages/GroupExpenses";
+import Reports from "./AfterLogin/pages/Reports";
+
+function AppContent() {
+  const location = useLocation();
+  const showFooter = ![
+    "/register",
+    "/login",
+    "/Dashboard",
+    "/members",
+    "/expenses",
+    "/group-expenses",
+    "/reports",
+  ].includes(location.pathname);
 
   return (
-    <Router>
-      <NavBar />
-      {/* <LogIn /> */}
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </main>
+      {showFooter && <Footer />}
       <Routes>
-        <Route path="/about-us" element={<AboutUs/>} /> {/* Create a route for About Us */}
-        <Route path="/home" element={<AboutUs />} /> {/* Create a route for Home */}
-        <Route path="/log-in" element={<LoginPage/>} /> {/*  Create a route for LogIn */}
-        <Route path="/sign-up" element={<SignupPage/>} /> {/* Create a route for SignUp */}
-        <Route path="/contactus" element={<ContactUs />} /> {/* Create a route for ContactUs */}
+        <Route
+          path="/Dashboard"
+          element={
+            <Layout>
+              <Dashboard />
+            </Layout>
+          }
+        />
+        <Route
+          path="/members"
+          element={
+            <Layout>
+              <Members />
+            </Layout>
+          }
+        />
+        <Route
+          path="/expenses"
+          element={
+            <Layout>
+              <Expenses />
+            </Layout>
+          }
+        />
+        <Route
+          path="/group-expenses"
+          element={
+            <Layout>
+              <GroupExpenses />
+            </Layout>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <Layout>
+              <Reports />
+            </Layout>
+          }
+        />
       </Routes>
-    </Router>
-  )
+    </div>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
+
+export default App;
