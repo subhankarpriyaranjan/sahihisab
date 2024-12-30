@@ -76,11 +76,30 @@ const Register = () => {
     setAlert(null);
 
     try {
-      const response = await registerUser(formData);
+      const { confirmPassword, number, ...rest } = formData;
+      const dataToSend = { ...rest, mobile: number, IsActive: 1 };
+
+      const response = await registerUser(dataToSend);
+      console.log("Response status: ", response.status);
+
+      if (!response || !response.headers) {
+        throw new Error("Invalid response from server");
+      }
+
+      const contentType = response.headers.get("content-type");
+      let responseData;
+
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json(); // Parse JSON response body
+      } else {
+        responseData = await response.text(); // Parse as text if not JSON
+      }
+
+      // Log the response for debugging
+      console.log("Response Data: ", responseData);
       setAlert({
         type: "success",
-        message:
-          "Registration successful! Please check your email for verification.",
+        message: "Registration successful! Please Wait...",
       });
 
       // Redirect to login after 2 seconds
