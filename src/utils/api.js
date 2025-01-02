@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const API_BASE_URL = "https://localhost:44316/api";
 
 export const registerUser = async (userData) => {
@@ -41,3 +43,34 @@ export const loginUser = async (credentials) => {
     throw error;
   }
 };
+
+
+
+
+export const addMember = async (memberData) => {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    throw new Error('No authorization token found');
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/Member/addMember`, // Replace with your actual endpoint
+      memberData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    // Enhance error handling
+    const message =
+      error.response?.data?.message || error.message || 'Failed to add member';
+    throw new Error(message);
+  }
+};
+

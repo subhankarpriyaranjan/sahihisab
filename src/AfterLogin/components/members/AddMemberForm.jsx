@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
+import { addMember } from '../../../utils/api';
 
-function AddMemberForm({ onClose }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-  });
+const AddMemberForm = ({ onClose }) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission
-    onClose();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError(null);
+
+    try {
+      const memberData = { name, email, phone };
+      await addMember(memberData);
+      window.alert('Member added successfully!');
+      onClose();
+    } catch (error) {
+      setError(error.message);
+      window.alert(`Error: ${error.message}`);
+    }
   };
 
   return (
@@ -28,13 +37,14 @@ function AddMemberForm({ onClose }) {
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <p className="text-red-500">{error}</p>}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
               type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
               required
             />
           </div>
@@ -42,9 +52,9 @@ function AddMemberForm({ onClose }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
               required
             />
           </div>
@@ -52,9 +62,9 @@ function AddMemberForm({ onClose }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
             <input
               type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
             />
           </div>
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
@@ -76,6 +86,6 @@ function AddMemberForm({ onClose }) {
       </div>
     </div>
   );
-}
+};
 
 export default AddMemberForm;

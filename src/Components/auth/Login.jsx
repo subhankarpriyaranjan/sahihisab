@@ -58,6 +58,8 @@ function Login({ onLoginSuccess }) {
     try {
       const response = await loginUser(formData);
 
+      
+      localStorage.setItem("token", response.token);
       // Notify parent component about login success
       onLoginSuccess();
 
