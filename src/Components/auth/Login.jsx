@@ -4,7 +4,7 @@ import { validateEmail } from "../../utils/validation";
 import { loginUser } from "../../utils/api";
 import Alert from "../ui/Alert";
 
-const Login = () => {
+function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -35,6 +35,7 @@ const Login = () => {
       ...prev,
       [name]: value,
     }));
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
@@ -56,12 +57,16 @@ const Login = () => {
 
     try {
       const response = await loginUser(formData);
+
+      // Notify parent component about login success
+      onLoginSuccess();
+
       setAlert({
         type: "success",
         message: "Login successful!",
       });
 
-      // Redirect to dashboard after successful login
+      // Redirect to the dashboard after successful login
       setTimeout(() => {
         navigate("/Dashboard");
       }, 1000);
@@ -75,13 +80,10 @@ const Login = () => {
     }
   };
 
-  const getInputClassName = (fieldName) => `
-    peer w-full border-b-2 
-    ${errors[fieldName] ? "border-red-500" : "border-gray-300"} 
-    bg-transparent pt-4 pb-1.5 text-gray-900 
-    placeholder-transparent focus:border-indigo-600 
-    focus:outline-none
-  `;
+  const getInputClassName = (fieldName) =>
+    `peer w-full border-b-2 ${
+      errors[fieldName] ? "border-red-500" : "border-gray-300"
+    } bg-transparent pt-4 pb-1.5 text-gray-900 placeholder-transparent focus:border-indigo-600 focus:outline-none`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 pt-16 pb-8 px-4">
@@ -154,6 +156,6 @@ const Login = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Login;
