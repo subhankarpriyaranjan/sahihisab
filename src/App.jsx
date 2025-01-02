@@ -4,6 +4,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -17,8 +18,9 @@ import Expenses from "./AfterLogin/pages/Expenses";
 import GroupExpenses from "./AfterLogin/pages/GroupExpenses";
 import Reports from "./AfterLogin/pages/Reports";
 
-function AppContent() {
+function AppContent({ isLoggedIn, setIsLoggedIn }) {
   const location = useLocation();
+
   const showFooter = ![
     "/register",
     "/login",
@@ -37,7 +39,6 @@ function AppContent() {
     "/reports",
   ].includes(location.pathname);
 
-  const isLoggedIn = false;
   return (
     <div className="min-h-screen flex flex-col">
       {showNavBar && <Navbar />}
@@ -45,7 +46,10 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={<Login onLoginSuccess={() => setIsLoggedIn(true)} />}
+          />
           {isLoggedIn ? (
             <>
               <Route
@@ -181,9 +185,11 @@ function AppContent() {
 }
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
     <Router>
-      <AppContent />
+      <AppContent isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
     </Router>
   );
 }
