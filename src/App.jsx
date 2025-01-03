@@ -5,8 +5,8 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useState } from "react";
-import Navbar from "./components/NavBar";
-import Footer from "./components/Footer";
+import Navbar from "./Components/NavBar";
+import Footer from "./Components/Footer";
 import Home from "./pages/Home";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
