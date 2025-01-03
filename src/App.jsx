@@ -8,8 +8,11 @@ import { useState } from "react";
 import Navbar from "./Components/NavBar";
 import Footer from "./Components/Footer";
 import Home from "./pages/Home";
-import Register from "./components/auth/Register";
-import Login from "./components/auth/Login";
+
+import Register from "./Components/auth/Register";
+import Login from "./Components/auth/Login";
+
+
 import Layout from "./AfterLogin/components/Layout";
 import Dashboard from "./AfterLogin/pages/Dashboard";
 import Members from "./AfterLogin/pages/Members";
