@@ -1,7 +1,164 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAllMembers } from '../../../utils/api';
-import { MagnifyingGlassIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { getAllMembers, addMember } from '../../../utils/api';
+import { MagnifyingGlassIcon, UserGroupIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { toast } from 'react-toastify';
+
+function AddMemberModal({ onClose, onSuccess }) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const memberData = { name, email, phone };
+      await addMember(memberData);
+      toast.success('🎉 Member added successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      setError(error.message);
+      toast.error(`🚫 ${error.message}`, {
+        position: "top-right",
+        autoClose: 5000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+        >
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-primary-100 rounded-xl">
+                <PlusIcon className="w-6 h-6 text-primary-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Add Member</h2>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+            >
+              <XMarkIcon className="w-5 h-5 text-gray-500" />
+            </motion.button>
+          </div>
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg"
+            >
+              <p className="text-sm text-red-700">{error}</p>
+            </motion.div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                placeholder="Enter member's name"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                placeholder="Enter email address"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                placeholder="Enter phone number"
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="button"
+                onClick={onClose}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 font-medium transition-colors"
+              >
+                Cancel
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={isLoading}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-medium transition-colors flex items-center justify-center space-x-2"
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Adding...</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusIcon className="w-5 h-5" />
+                    <span>Add Member</span>
+                  </>
+                )}
+              </motion.button>
+            </div>
+          </form>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
 
 function MemberList() {
   const [members, setMembers] = useState([]);
@@ -9,24 +166,33 @@ function MemberList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [membersPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+
+  const fetchMembers = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await getAllMembers();
+      setMembers(data);
+    } catch (error) {
+      console.error('Failed to fetch members:', error);
+      toast.error('Failed to fetch members. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    async function fetchMembers() {
-      try {
-        const data = await getAllMembers();
-        setMembers(data);
-      } catch (error) {
-        console.error('Failed to fetch members:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
     fetchMembers();
-  }, []);
+  }, [fetchMembers]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // Reset to first page on search
+    setCurrentPage(1);
+  };
+
+  const handleAddMemberSuccess = () => {
+    setShowAddMemberModal(false);
+    fetchMembers();
   };
 
   const filteredMembers = members.filter(member =>
@@ -53,65 +219,85 @@ function MemberList() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
-    >
-      <div className="p-6 border-b border-gray-100">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-primary-100 rounded-xl">
-              <UserGroupIcon className="w-6 h-6 text-primary-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900">Members</h2>
-          </div>
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search members..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="pl-10 pr-4 py-3 w-full sm:w-64 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
-            />
-          </div>
-        </div>
-      </div>
-
-      <AnimatePresence mode="wait">
-        {currentMembers.length > 0 ? (
-          <motion.div
-            key="member-list"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <DesktopView members={currentMembers} />
-            <MobileView members={currentMembers} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="no-results"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="p-8 text-center"
-          >
-            <p className="text-gray-500">No members found matching your search.</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {filteredMembers.length > membersPerPage && (
-        <Pagination
-          membersPerPage={membersPerPage}
-          totalMembers={filteredMembers.length}
-          paginate={paginate}
-          currentPage={currentPage}
+    <>
+      {showAddMemberModal && (
+        <AddMemberModal
+          onClose={() => setShowAddMemberModal(false)}
+          onSuccess={handleAddMemberSuccess}
         />
       )}
-    </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+      >
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-primary-100 rounded-xl">
+                <UserGroupIcon className="w-6 h-6 text-primary-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Members</h2>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search members..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="pl-10 pr-4 py-3 w-full sm:w-64 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                />
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowAddMemberModal(true)}
+                className="inline-flex items-center justify-center px-4 py-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-medium transition-colors"
+              >
+                <PlusIcon className="w-5 h-5 mr-2" />
+                Add Member
+              </motion.button>
+            </div>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {currentMembers.length > 0 ? (
+            <motion.div
+              key="member-list"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <DesktopView members={currentMembers} />
+              <MobileView members={currentMembers} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="no-results"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="p-8 text-center"
+            >
+              <p className="text-gray-500">No members found matching your search.</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {filteredMembers.length > membersPerPage && (
+          <Pagination
+            membersPerPage={membersPerPage}
+            totalMembers={filteredMembers.length}
+            paginate={paginate}
+            currentPage={currentPage}
+          />
+        )}
+      </motion.div>
+    </>
   );
 }
 

@@ -12,7 +12,7 @@ import {
 
 const navigation = [
   { name: 'Home', href: '/', icon: HomeIcon },
-  { name: 'Features', href: '#features', icon: ChartBarIcon },
+  { name: 'Features', href: '/features', icon: ChartBarIcon },
   { name: 'About', href: '#about', icon: InformationCircleIcon },
   { name: 'Team', href: '#team', icon: UserGroupIcon },
 ];
