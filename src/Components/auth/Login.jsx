@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { LockClosedIcon } from '@heroicons/react/24/solid';
+import { loginUser } from '../../utils/api';
 
 export default function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
@@ -11,26 +12,83 @@ export default function Login({ onLoginSuccess }) {
     password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
     try {
       const response = await loginUser(formData);
-      localStorage.setItem("token", response.token);
-      onLoginSuccess();
-      toast.success('Login successful!');
-      navigate('/Dashboard');
+      
+      // Check for token in the correct response format
+      if (response && response.token) {
+        // Store the token
+        localStorage.setItem("token", response.token);
+        
+        // Store user info if available
+        if (response.user) {
+          localStorage.setItem("user", JSON.stringify(response.user));
+        }
+
+        // Call the success callback if provided
+        if (typeof onLoginSuccess === 'function') {
+          onLoginSuccess(response);
+        }
+        
+        toast.success('🎉 Welcome back! Login successful', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        
+        // Navigate to dashboard
+        navigate('/dashboard');
+      } else {
+        throw new Error('Invalid credentials or server response');
+      }
     } catch (error) {
-      toast.error(error.message || 'Login failed. Please try again.');
+      console.error('Login error:', error);
+      
+      // Set the error message for display
+      const errorMessage = error.message === 'Failed to fetch' 
+        ? 'Unable to connect to server. Please check your internet connection.'
+        : error.message || 'Login failed. Please try again.';
+      
+      setError(errorMessage);
+      
+      // Show error toast
+      toast.error(`🚫 ${errorMessage}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      
+      // Clear password field on error
+      setFormData(prev => ({
+        ...prev,
+        password: ''
+      }));
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    if (error) setError(null);
   };
 
   return (
@@ -58,7 +116,27 @@ export default function Login({ onLoginSuccess }) {
             </Link>
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-50 border-l-4 border-red-400 p-4"
+          >
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+        
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -68,6 +146,7 @@ export default function Login({ onLoginSuccess }) {
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 required
                 className="input mt-1"
                 placeholder="Enter your email"
@@ -83,6 +162,7 @@ export default function Login({ onLoginSuccess }) {
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="current-password"
                 required
                 className="input mt-1"
                 placeholder="Enter your password"
