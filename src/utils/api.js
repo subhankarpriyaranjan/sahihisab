@@ -74,3 +74,27 @@ export const addMember = async (memberData) => {
   }
 };
 
+export const getAllMembers = async () => {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    throw new Error('No authorization token found');
+  }
+
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/Member/getallmembers`, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || error.message || 'Failed to fetch members';
+    throw new Error(message);
+  }
+};
