@@ -44,9 +44,6 @@ export const loginUser = async (credentials) => {
   }
 };
 
-
-
-
 export const addMember = async (memberData) => {
   const token = localStorage.getItem('token');
   
@@ -96,5 +93,39 @@ export const getAllMembers = async () => {
     const message =
       error.response?.data?.message || error.message || 'Failed to fetch members';
     throw new Error(message);
+  }
+};
+
+export const AddExpense = async (formData) => {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    throw new Error('No authorization token found');
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/Expense/addExpense`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      throw new Error(error.response.data?.message || 'Server error while adding expense');
+    } else if (error.request) {
+      // The request was made but no response was received
+      throw new Error('No response from server. Please check your internet connection');
+    } else {
+      // Something happened in setting up the request
+      throw new Error('Failed to add expense: ' + error.message);
+    }
   }
 };
