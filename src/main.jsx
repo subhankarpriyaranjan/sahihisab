@@ -1,10 +1,16 @@
-import { StrictMode } from 'react'
+import React from 'react'
 import { createRoot } from 'react-dom/client'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import App from './App.jsx'
 import './index.css'
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+const container = document.getElementById('root')
+const root = createRoot(container)
+
+root.render(
+  <React.StrictMode>
     <App />
-  </StrictMode>,
+    <ToastContainer />
+  </React.StrictMode>
 )
