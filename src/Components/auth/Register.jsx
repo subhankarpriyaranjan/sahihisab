@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   validateEmail,
   validatePassword,
@@ -8,6 +9,7 @@ import {
 } from "../../utils/validation";
 import { registerUser } from "../../utils/api";
 import Alert from "../ui/Alert";
+import GoogleSignInButton from "./GoogleSignInButton";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -56,7 +58,6 @@ const Register = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -80,7 +81,6 @@ const Register = () => {
       const dataToSend = { ...rest, mobile: number, IsActive: 1 };
 
       const response = await registerUser(dataToSend);
-      console.log("Response status: ", response.status);
 
       if (!response || !response.headers) {
         throw new Error("Invalid response from server");
@@ -90,185 +90,233 @@ const Register = () => {
       let responseData;
 
       if (contentType && contentType.includes("application/json")) {
-        responseData = await response.json(); // Parse JSON response body
+        responseData = await response.json();
       } else {
-        responseData = await response.text(); // Parse as text if not JSON
+        responseData = await response.text();
       }
 
-      // Log the response for debugging
-      console.log("Response Data: ", responseData);
-      setAlert({
-        type: "success",
-        message: "Registration successful! Please Wait...",
+      toast.success("🎉 Registration successful! Please log in.", {
+        position: "top-right",
+        autoClose: 3000,
       });
 
-      // Redirect to login after 2 seconds
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     } catch (error) {
-      setAlert({
-        type: "error",
-        message: error.message || "Registration failed. Please try again.",
+      toast.error(error.message || "Registration failed. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleGoogleSuccess = async (response) => {
+    try {
+      toast.success("🎉 Google Sign-In successful!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Google Sign-In failed. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+      });
+    }
+  };
+
   const getInputClassName = (fieldName) => `
-    peer w-full border-b-2 
-    ${errors[fieldName] ? "border-red-500" : "border-gray-300"} 
-    bg-transparent pt-4 pb-1.5 text-gray-900 
-    placeholder-transparent focus:border-indigo-600 
-    focus:outline-none
+    peer w-full border-2 rounded-lg px-4
+    ${
+      errors[fieldName]
+        ? "border-red-300 focus:border-red-500"
+        : "border-gray-200 focus:border-indigo-500"
+    } 
+    bg-white py-2.5 text-gray-900 
+    placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200
+    transition-all duration-200
   `;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 pt-16 pb-8 px-4">
-      <div className="max-w-md mx-auto mt-8">
-        <div className="bg-white p-8 rounded-2xl shadow-xl backdrop-blur-sm bg-opacity-80">
-          <h2 className="text-3xl font-bold text-center mb-8 text-indigo-700">
-            Create Account
-          </h2>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      <div className="absolute top-0 right-0 mt-8 mr-8">
+        <Link
+          to="/login"
+          className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
+        >
+          Sign in
+        </Link>
+      </div>
+      <div className="flex flex-col items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Create Account
+              </h2>
+              <p className="text-gray-600">
+                Join us today and start managing your expenses
+              </p>
+            </div>
 
-          {alert && <Alert type={alert.type} message={alert.message} />}
+            {alert && <Alert type={alert.type} message={alert.message} />}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="relative">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className={getInputClassName("firstName")}
+                    placeholder="John"
+                    disabled={isSubmitting}
+                  />
+                  {errors.firstName && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.firstName}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className={getInputClassName("lastName")}
+                    placeholder="Doe"
+                    disabled={isSubmitting}
+                  />
+                  {errors.lastName && (
+                    <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address
+                </label>
                 <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  className={getInputClassName("firstName")}
-                  placeholder="First Name"
+                  className={getInputClassName("email")}
+                  placeholder="you@example.com"
                   disabled={isSubmitting}
                 />
-                <label className="absolute left-0 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-gray-600 peer-focus:text-sm">
-                  First Name
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone Number
                 </label>
-                {errors.firstName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.firstName}
+                <input
+                  type="tel"
+                  name="number"
+                  value={formData.number}
+                  onChange={handleChange}
+                  className={getInputClassName("number")}
+                  placeholder="1234567890"
+                  disabled={isSubmitting}
+                />
+                {errors.number && (
+                  <p className="mt-1 text-sm text-red-600">{errors.number}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={getInputClassName("password")}
+                  placeholder="••••••••"
+                  disabled={isSubmitting}
+                />
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={getInputClassName("confirmPassword")}
+                  placeholder="••••••••"
+                  disabled={isSubmitting}
+                />
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.confirmPassword}
                   </p>
                 )}
               </div>
 
-              <div className="relative">
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className={getInputClassName("lastName")}
-                  placeholder="Last Name"
-                  disabled={isSubmitting}
-                />
-                <label className="absolute left-0 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-gray-600 peer-focus:text-sm">
-                  Last Name
-                </label>
-                {errors.lastName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
-                )}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? "Creating Account..." : "Create Account"}
+              </button>
+            </form>
+
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 text-gray-500 bg-white">
+                  Or continue with
+                </span>
               </div>
             </div>
 
-            <div className="relative">
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={getInputClassName("email")}
-                placeholder="Email"
-                disabled={isSubmitting}
+            <div>
+              <GoogleSignInButton
+                onSuccess={handleGoogleSuccess}
+                className="w-full !bg-white !text-gray-700 border-2 border-gray-200 hover:!bg-gray-50 hover:border-gray-300 !shadow-sm"
+                isRegisterPage={true}
               />
-              <label className="absolute left-0 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-gray-600 peer-focus:text-sm">
-                Email
-              </label>
-              {errors.email && (
-                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-              )}
             </div>
 
-            <div className="relative">
-              <input
-                type="tel"
-                name="number"
-                value={formData.number}
-                onChange={handleChange}
-                className={getInputClassName("number")}
-                placeholder="Phone Number"
-                disabled={isSubmitting}
-              />
-              <label className="absolute left-0 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-gray-600 peer-focus:text-sm">
-                Phone Number
-              </label>
-              {errors.number && (
-                <p className="text-red-500 text-xs mt-1">{errors.number}</p>
-              )}
-            </div>
-
-            <div className="relative">
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={getInputClassName("password")}
-                placeholder="Password"
-                disabled={isSubmitting}
-              />
-              <label className="absolute left-0 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-gray-600 peer-focus:text-sm">
-                Password
-              </label>
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-              )}
-            </div>
-
-            <div className="relative">
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className={getInputClassName("confirmPassword")}
-                placeholder="Confirm Password"
-                disabled={isSubmitting}
-              />
-              <label className="absolute left-0 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-gray-600 peer-focus:text-sm">
-                Confirm Password
-              </label>
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.02] ${
-                isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-              }`}
-            >
-              {isSubmitting ? "Registering..." : "Register"}
-            </button>
-          </form>
-
-          <p className="mt-8 text-center text-gray-600">
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-indigo-600 hover:text-indigo-800 font-semibold transition-colors"
-            >
-              Login here
-            </Link>
-          </p>
+            <p className="mt-8 text-center text-gray-600">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+              >
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

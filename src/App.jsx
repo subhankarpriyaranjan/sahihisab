@@ -10,7 +10,6 @@ import { useState, useEffect } from "react";
 import Navbar from "./Components/NavBar";
 import Footer from "./Components/Footer";
 import Home from "./pages/Home";
-
 import Register from "./Components/auth/Register";
 import Login from "./Components/auth/Login";
 import Layout from "./AfterLogin/components/Layout";
@@ -45,14 +44,15 @@ const ProtectedRoute = ({ isLoggedIn, children }) => {
 
 // Routes configuration
 const routes = [
-  { path: "/Dashboard", component: Dashboard },
+  { path: "/dashboard", component: Dashboard },
   { path: "/members", component: Members },
   { path: "/expenses", component: Expenses },
   { path: "/group-expenses", component: GroupExpenses },
   { path: "/reports", component: Reports },
 ];
 
-function AppContent({ isLoggedIn, setIsLoggedIn }) {
+function AppContent() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -72,7 +72,7 @@ function AppContent({ isLoggedIn, setIsLoggedIn }) {
     } else if (token) {
       setIsLoggedIn(true);
     }
-  }, [setIsLoggedIn, location.pathname]);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -100,7 +100,7 @@ function AppContent({ isLoggedIn, setIsLoggedIn }) {
             />
           ))}
 
-          {/* Catch all route - redirect to home */}
+          {/* Catch-all redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
@@ -110,14 +110,9 @@ function AppContent({ isLoggedIn, setIsLoggedIn }) {
 }
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    // Initialize login state from localStorage
-    return !!localStorage.getItem("token");
-  });
-
   return (
     <Router>
-      <AppContent isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      <AppContent />
     </Router>
   );
 }
