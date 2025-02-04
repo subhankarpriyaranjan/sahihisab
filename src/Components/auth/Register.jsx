@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   validateEmail,
   validatePassword,
@@ -8,6 +9,7 @@ import {
 } from "../../utils/validation";
 import { registerUser } from "../../utils/api";
 import Alert from "../ui/Alert";
+import GoogleSignInButton from "./GoogleSignInButton";
 import {
   UserIcon,
   EnvelopeIcon,
@@ -33,6 +35,21 @@ const Register = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleGoogleSuccess = async (response) => {
+    try {
+      toast.success("🎉 Google Sign-In successful!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Google Sign-In failed. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+      });
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -125,6 +142,11 @@ const Register = () => {
         responseData = await response.text();
       }
 
+      toast.success("🎉 Registration successful! Please log in.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+
       setAlert({
         type: "success",
         message: "Registration successful! Please Wait...",
@@ -134,9 +156,9 @@ const Register = () => {
         navigate("/login");
       }, 2000);
     } catch (error) {
-      setAlert({
-        type: "error",
-        message: error.message || "Registration failed. Please try again.",
+      toast.error(error.message || "Registration failed. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
       });
     } finally {
       setIsSubmitting(false);
@@ -335,7 +357,24 @@ const Register = () => {
               )}
             </button>
 
-            <p className="text-center text-sm text-gray-500">
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 text-gray-500 bg-white">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <GoogleSignInButton
+              onSuccess={handleGoogleSuccess}
+              className="w-full !bg-white !text-gray-700 border border-gray-200 hover:!bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              isRegisterPage={true}
+            />
+
+            <p className="text-center text-sm text-gray-500 mt-6">
               By creating an account, you agree to our{" "}
               <Link to="/terms" className="text-indigo-600 hover:text-indigo-500">
                 Terms of Service
