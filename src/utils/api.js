@@ -44,8 +44,46 @@ export const loginUser = async (credentials) => {
   }
 };
 
+export const checkEmailExists = async (email) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/GoogleAuth/check-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
 
+    if (!response.ok) {
+      throw new Error("Failed to check email");
+    }
 
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const googleAuth = async (userData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/GoogleAuth/authenticate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Google authentication failed");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const addMember = async (memberData) => {
   const token = localStorage.getItem('token');
