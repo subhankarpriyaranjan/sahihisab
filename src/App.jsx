@@ -12,6 +12,8 @@ import Footer from "./Components/Footer";
 import Home from "./pages/Home";
 import Register from "./Components/auth/Register";
 import Login from "./Components/auth/Login";
+import GuestRegister from "./Components/auth/GuestRegister";
+import GuestLogin from "./Components/auth/GuestLogin";
 import Layout from "./AfterLogin/components/Layout";
 import Dashboard from "./AfterLogin/pages/Dashboard";
 import Members from "./AfterLogin/pages/Members";
@@ -58,7 +60,7 @@ function AppContent() {
 
   // Define paths where footer and navbar should be hidden
   const protectedPaths = routes.map(route => route.path);
-  const noFooterPaths = ["/register", "/login", ...protectedPaths];
+  const noFooterPaths = ["/register", "/login", "/guestRegister","/guestLogin", ...protectedPaths];
   
   const showFooter = !noFooterPaths.includes(location.pathname);
   const showNavBar = !protectedPaths.includes(location.pathname);
@@ -81,11 +83,10 @@ function AppContent() {
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/register" element={<Register />} />
-          <Route
-            path="/login"
-            element={<Login onLoginSuccess={() => setIsLoggedIn(true)} />}
-          />
+          <Route path="/guestRegister" element={<GuestRegister />} />
+          <Route path="/guestLogin" element={<GuestLogin />} />
 
           {/* Protected routes */}
           {routes.map(({ path, component: Component }) => (
